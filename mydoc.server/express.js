@@ -193,7 +193,7 @@ function IsMatchColor(color_src, color_dst) {
 }
 //4.2 컬러 계통찾기
 function getColorCategory(color_src) {
-    let color_code ="";
+    var color_code ="";
     switch(color_src) {
         case 'WHITE' :
           color_code = "c000"
