@@ -9,7 +9,7 @@ var app = express();
 var request = require('request');//request
 var port = process.env.PORT || 3000;
 var cors = require('cors');//cross-browsing
-var mysql = require('mysql');//mysql
+// var mysql = require('mysql');//mysql
 // ***********************************************************
 // mysql-booster 관리
 // var MysqlPoolBooster = require('mysql-pool-booster');
@@ -18,14 +18,14 @@ var mysql = require('mysql');//mysql
 // mysql.createPool(db_config);
 // ***********************************************************
 //1.2.설정-연동
-var connection = mysql.createConnection(//mysql
-{
-  host     : '127.0.0.1',//localhost로 하면 에러남
-  user     : 'root',
-  password : 'Flower5wantnight',
-  database : 'mydoc'
-});
-connection.connect();
+// var connection = mysql.createConnection(//mysql
+// {
+//   host     : '127.0.0.1',//localhost로 하면 에러남
+//   user     : 'root',
+//   password : 'Flower5wantnight',
+//   database : 'mydoc'
+// });
+// connection.connect();
 
 app.use(express.static(__dirname + '/public'));//express
 app.use(express.json());
@@ -37,8 +37,8 @@ app.engine('html', require('ejs').renderFile);
 
 app.use(cors());//cross-browsing
 //1.3. 변수 설정
-const tb_disease = "tb_disease_list";
-const tb_body = "tb_bodypart_list";
+// const tb_disease = "tb_disease_list";
+// const tb_body = "tb_bodypart_list";
 /*
   *
   *******  part2.프론트-화면 렌더링 *******
@@ -110,10 +110,11 @@ app.get('/searchAll', function (req, res) {
 /*
   *   < Action category >
   *
-  * 1. MYDOC.INTENT.diagnosis -> 진단 해주기 (병명 + 신체부위, 병명, 신체부위)
-  * 2. MYDOC.INTENT.search -> 관련 질환 정보 알려주기 (병명 + 신체부위, 병명, 신체부위)
-  * 3. MYDOC.INTENT.history -> 환자 지난 검사 이력 보여주기(병명, 신체부위)
-  * 4. MYDOC.INTENT.prevent -> 신체부위별 스트레칭 및 테이핑 방법, 운동별 테이핑 방법
+  * 1. MYDOC.INTENT.match -> 컬러 매칭 여부(옷 + 색깔 || 색깔)
+    1.1. 2cloth + 2color
+    1.2. 2cloth + 1color
+    1.3. no     + 2color
+    1.$. default
   *
 */
 //3.1.Main -> ok
@@ -138,49 +139,41 @@ app.post('/', function (req, res) {
   };
   res.json(body);
 })
-app.post('/MYDOC.ACTION.search', function (req, res){
-
-  console.log("\n>> APi_main from SK search");
+app.post('/MC.ACTION.match', function (req, res){
+  console.log("\n>> APi_match from SK search");
   var action_name = req.body.action.actionName;
-  var nugu_version = req.body.version;
-  var action = req.body.action;
-  var action_params = req.body.action.parameters;
-
-  console.log(action);
+  var mVersion = req.body.version;
+  var mAction = req.body.action;
+  var mParams = req.body.action.parameters;
+  var mresultColor = "";
+  console.log(mAction);
+  //branch-action
+  if (mParams.dst_color && mParams.src_color) {
+      //2cloth + 2color
+      //If the two color are matched well,
+      mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
+  } else if (mParams.dst_cloth && mParams.src_cloth) {
+      //2cloth + 1color
+      //what the color matched well is it
+      mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
+  } else {
+      //default
+      mresultColor ="";
+  }
   var mresultCode = 'OK';
   var body = {
-  version : nugu_version,
-  resultCode : mresultCode,
-  output : {
-    search_disease : '손목 터널 증후군',//action_params.requestNum,
-    search_bodyparts : "손목",
-    search_whatpain : "부음",
-    search_resultCode : mresultCode,
-    search_resultDesc : action_params.requestNum + "is Called"
-  },
-  directives : []
-  };
-  res.json(body);
-})
-app.post('/MYDOC.INTENT.test', function (req, res){
-
-  console.log("\n>> APi_main from SK gogo");
-  var action_name = req.body.action.actionName;
-  var nugu_version = req.body.version;
-  var action = req.body.action;
-  var action_params = req.body.action.parameters;
-
-  console.log(action);
-  var mresultCode = 'OK';
-  var body = {
-  version : nugu_version,
-  resultCode : mresultCode,
-  output : {
-    requestNum : 'hoho',//action_params.requestNum,
-    resultCode : mresultCode,
-    resultDesc : action_params.requestNum + "is Called"
-  },
-  directives : []
+      version : mVersion,
+      resultCode : mresultCode,
+      output : {
+        src_cloth : mParams.src_cloth,//action_params.requestNum,
+        src_color : mParams.src_color,
+        dst_cloth : mParams.dst_cloth,
+        dst_color : mParams.dst_color,
+        query_type : mParams.query_type,
+        resultCode : mresultCode,
+        resultColor : mresultColor
+      },
+      directives : []
   };
   res.json(body);
 })
@@ -189,24 +182,66 @@ app.post('/MYDOC.INTENT.test', function (req, res){
   ******* part4.서버-함수 선언 *******
   *
 */
-//4-1. 질병 검색
-function searchDisease(_dname)
-{
-    console.log(" > func_searchDisease + " + _dname);
-    var sql_s_d = 'SELECT `dinfo` FROM `tb_disease_list` WHERE `' + tb_disease +'`+ WHERE `bname`=?;';
-    connection.query(sql_s_d, [_dname], function (err, results) {
-        if (error) {
-            console.log(" >> cannot find +" + dname);
-            throw error;
-        }
-        else {
-            for (i = 0; results.length; ++i) {
-                if(results[i].indexOf(dname) != -1) {
-                    console.log(dinfo);
-                }
-            }
-        }
-    })
+//4.1 두 컬러간 매칭 파악
+function IsMatchColor(color_src, color_dst) {
+    var res = "";
+    //exception
+    if (!color_src) {return res;}
+    //2color
+
+    //1color
+}
+//4.2 컬러 계통찾기
+function getColorCategory(color_src) {
+    let color_code ="";
+    switch(color_src) {
+        case 'WHITE' :
+          color_code = "c000"
+          break;
+        case 'BLACK' :
+          color_code = color_code"c001"
+          break;
+        case 'RED' :
+          color_code = "c002"
+          break;
+        case 'ORANGE' :
+          color_code = "c003"
+          break;
+        case 'YELLOW' :
+          color_code = "c004"
+          break;
+        case 'GREEN' :
+          color_code = "c005"
+          break;
+        case 'BLUE' :
+          color_code = "c006"
+          break;
+        case 'INDIGO' :
+          color_code = "c007"
+          break;
+        case 'PURPLE' :
+          color_code = "c008"
+          break;
+        case 'GOLD' :
+          color_code = "c009"
+          break;
+        case 'SILVER' :
+          color_code = "c010"
+          break;
+        case 'PINK' :
+          color_code = "c011"
+          break;
+        case 'SKY' :
+          color_code = "c012"
+          break;
+        case 'IVORY' :
+          color_code = "c013"
+          break;
+        case 'BEIGE' :
+          color_code = "c014"
+          break;
+    }
+    return color_code;
 }
 //4.$. 서버처리-대기
 app.listen(3000);
