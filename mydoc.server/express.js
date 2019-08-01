@@ -199,7 +199,7 @@ function getColorCategory(color_src) {
           color_code = "c000"
           break;
         case 'BLACK' :
-          color_code = color_code"c001"
+          color_code = "c001"
           break;
         case 'RED' :
           color_code = "c002"
