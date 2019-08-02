@@ -282,17 +282,17 @@ app.post('/MC.ACTION.match', function (req, res){
             .catch(function(err) {
                 console.log("\n >>(3) sorry, IsMatchColor has Invalid index");
                 return res.json(body);
-            }
-          })
+            });
+        })
         .catch(function(err) {
             console.log("\n >> (2)sorry, server cannot find the source color");
             return res.json(body);
-        })
+        });
   })
   .catch(function(err) {
       console.log("\n >> (1)sorry, server cannot find the source color");
       return res.json(body);
-  })
+  });
 })
 /*
   *
