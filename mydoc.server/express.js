@@ -15,7 +15,7 @@ var cors = require('cors');//cross-browsing
 // var MysqlPoolBooster = require('mysql-pool-booster');
 // mysql = MysqlPoolBooster(mysql);
 // // db-configuration 적용
-// mysql.createPool(db_config);
+// mysql.createPool(dhttps://github.com/snrndi121/colorsk.gitb_config);
 // ***********************************************************
 //1.2.설정-연동
 // var connection = mysql.createConnection(//mysql
@@ -40,21 +40,21 @@ app.use(cors());//cross-browsing
 const BASE_COLOR_NUM = 16;
 //color_info
 const color_pallet = [
-  {index : 0, code : "c000", name = "WHITE"},
-  {index : 1, code : "c001", name = "BLACK"},
-  {index : 2, code : "c002", name = "RED"},
-  {index : 3, code : "c003", name = "ORANGE"},
-  {index : 4, code : "c004", name = "YELLOW"},
-  {index : 5, code : "c005", name = "GREEN"},
-  {index : 6, code : "c006", name = "BLUE"},
-  {index : 7, code : "c007", name = "INDIGO"},
-  {index : 8, code : "c008", name = "PURPLE"},
-  {index : 9, code : "c009", name = "GOLD"},
-  {index : 10, code : "c010", name = "SILVER"},
-  {index : 11, code : "c011", name = "PINK"},
-  {index : 12, code : "c012", name = "SKY"},
-  {index : 13, code : "c013", name = "IVORY"},
-  {index : 14, code : "c014", name = "BEIGE"},
+  {index : 0, code : "c000", name : "WHITE"},
+  {index : 1, code : "c001", name : "BLACK"},
+  {index : 2, code : "c002", name : "RED"},
+  {index : 3, code : "c003", name : "ORANGE"},
+  {index : 4, code : "c004", name : "YELLOW"},
+  {index : 5, code : "c005", name : "GREEN"},
+  {index : 6, code : "c006", name : "BLUE"},
+  {index : 7, code : "c007", name : "INDIGO"},
+  {index : 8, code : "c008", name : "PURPLE"},
+  {index : 9, code : "c009", name : "GOLD"},
+  {index : 10, code : "c010", name : "SILVER"},
+  {index : 11, code : "c011", name : "PINK"},
+  {index : 12, code : "c012", name : "SKY"},
+  {index : 13, code : "c013", name : "IVORY"},
+  {index : 14, code : "c014", name : "BEIGE"},
   {index : -1, code : "cccc", name : "err_undef_color"}
 ];
 //basic combination
