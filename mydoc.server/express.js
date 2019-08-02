@@ -215,6 +215,7 @@ app.post('/MC.ACTION.match', function (req, res){
       directives : []
   };
   console.log("\nres_json\n" + JSON.stringfy(body));
+  console.log("\nres_json\n" + JSON.parse(body));
   res.json(body);
 })
 /*
