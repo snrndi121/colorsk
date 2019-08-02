@@ -201,7 +201,7 @@ app.post('/MC.ACTION.match', function (req, res){
       console.log("\n >> sorry, server cannot find the source color");
   })
   .then(IsMatchColor(mParams.src_color, mParams.dst_color)
-      .then(function(match_res {
+      .then(function(match_res) {
           console.log("IsMatchColor");
           var body = {
             version : mVersion,
