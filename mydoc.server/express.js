@@ -210,14 +210,13 @@ app.post('/MC.ACTION.match', function (req, res){
             console.log("\n >> (2)find the dest_id : " + dst_id);
             IsMatchColor(src_id, dst_id).then( function(match_res) {
                 console.log("\n >> Last called\n");
-                body.resultColor = match_res;
+                body.output.resultColor = match_res;
                 console.log(body);
                 return res.json(body);
             })
             .catch(function(err) {
                 console.log("\n >>(3) sorry, IsMatchColor has Invalid index");
                 body.resultCode = err;
-
                 return res.json(body);
             });
         })
@@ -257,7 +256,7 @@ function IsMatchColor(src_color_id, dst_color_id) {
               }
         }
         console.log(">> func_IsMatchColor OUT");
-        resovle("unmatch");
+        resolve("unmatch");
     });
 }
 //4.2 컬러 계통찾기(Find color's index from color_pallet)
