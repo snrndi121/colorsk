@@ -198,6 +198,7 @@ app.post('/MC.ACTION.match', function (req, res){
   //     mresultColor ="";
   // }
   mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
+  console.log("\n>> IsMatchColor result : " + mresultColor);
   var mresultCode = 'OK';
   var body = {
       version : mVersion,
