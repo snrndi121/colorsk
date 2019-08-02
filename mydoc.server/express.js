@@ -182,26 +182,11 @@ app.post('/MC.ACTION.match', function (req, res){
   var mVersion = req.body.version;
   var mAction = req.body.action;
   var mParams = req.body.action.parameters;
-  var mresultColor = "";
   var mresultCode = 'OK';
   console.log(mAction);
   console.log(mParams);
-  getColorCategory(mParams.src_color.value)
-  .then(function(src_id) {
-        console.log("\n >> find the source_id : " + src_id);
-        getColorCategory(mParams.dst_color.value)
-        .then(function(dst_id) {
-            console.log("\n >> find the dest_id : " + dst_id);
-        })
-        .catch(function(err) {
-            console.log("\n >> sorry, server cannot find the dest color");
-        })
-  })
-  .catch(function(err) {
-      console.log("\n >> sorry, server cannot find the source color");
-  })
-  .then(IsMatchColor(mParams.src_color, mParams.dst_color)
-      .then(function(match_res) {
+  IsMatchColor(mParams.src_color, mParams.dst_color)
+  .then(function(match_res) {
           console.log("IsMatchColor");
           var body = {
             version : mVersion,
@@ -219,12 +204,61 @@ app.post('/MC.ACTION.match', function (req, res){
           };
     })
     .then(function() {
-        console.log("3");
+        console.log(">> last call");
+        console.log(body);
         res.json(body);
     })
 ).then(function() {
     console.log(">> all done");
 })
+// app.post('/MC.ACTION.match', function (req, res){
+//   console.log("\n>> APi_match from SK match");
+//   var action_name = req.body.action.actionName;
+//   var mVersion = req.body.version;
+//   var mAction = req.body.action;
+//   var mParams = req.body.action.parameters;
+//   var mresultColor = "";
+//   var mresultCode = 'OK';
+//   console.log(mAction);
+//   console.log(mParams);
+//   var src_id, dst_id;
+//   getColorCategory(mParams.src_color.value)
+//   .then(function(id) {
+//         src_id = id;
+//         console.log("\n >>(1) find the source_id : " + src_id);})
+//   .catch(function(err) {
+//       console.log("\n >> (1)sorry, server cannot find the source color");})
+//   .then(getColorCategory(mParams.dst_color.value)
+//       .then(function(id) {
+//           dst_id = id;
+//           console.log("\n >> (2)find the dest_id : " + dst_id);})
+//       .catch(function(err) {
+//           console.log("\n >>(2) sorry, server cannot find the dest color");})
+//   .then(IsMatchColor(mParams.src_color, mParams.dst_color)
+//       .then(function(match_res) {
+//           console.log("IsMatchColor");
+//           var body = {
+//             version : mVersion,
+//             resultCode : mresultCode,
+//             output : {
+//               src_cloth : mParams.src_cloth,//action_params.requestNum,
+//               src_color : mParams.src_color,
+//               dst_cloth : mParams.dst_cloth,
+//               dst_color : mParams.dst_color,
+//               query_type : mParams.query_type,
+//               resultCode : mresultCode,
+//               resultColor : match_res
+//             },
+//             directives : []
+//           };
+//     })
+//     .then(function() {
+//         console.log("3");
+//         res.json(body);
+//     })
+// ).then(function() {
+//     console.log(">> all done");
+// })
 /*
   *
   ******* part4.서버-함수 선언 *******
@@ -233,45 +267,52 @@ app.post('/MC.ACTION.match', function (req, res){
 //4.1 두 컬러간 매칭 파악
 function IsMatchColor(src_param, dst_param) {
     new Promise(function (resolve, reject) {
-        var res = "";
+        var res = {src_id : '', dst_id : ''};
         //exception
         if (!src_param) {
-          console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
-          resolve(res);
+            console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
+            resolve("err_undef_color");
         }
-        var src_id;
         //1color
-        if (!dst_param) {
-            getColorCategory(src_param.value).then(function (id) {
-                src_id = id;
-                console.log(" >> src_color info : " + color_pallet[src_id].index + " : " + color_pallet[src_id].code + " : " + color_pallet[src_id].name);
-                console.log("\n### Server method_IsMatchColor() ###\n >> handling the 1 color case");
-                resovle(color_pallet[src_id].code);
-            });
-        }
-        //2color
-        getColorCategory(dst_param.value).then(function (id) {
+        getColorCategory(src_param.value)
+        .then(function(src_id) {
+            console.log("\n### Server method_IsMatchColor() ###\n >> handling the 1 color case");
+            console.log(" >> src_color info : " + color_pallet[src_id].index + " : " + color_pallet[src_id].code + " : " + color_pallet[src_id].name);
+            res.src_id = src_id;
+            //If cas '2Cloth + 1color', then return source's code
+            if (!dst_param) {resolve(color_pallet[src_id].code);}
+        }).catch(function(err) {
+            console.log(err);
+        })
+        .then(getColorCategory(dst_param.value).then(function(dst_id) {
+            //2color
             console.log("\n### Server method_IsMatchColor() ###\n >> handling the 2 color case");
             console.log(" >> target_dst_info : " + dst_param.value);
-            dst_code = color_pallet[id].code;
-            for (i = 0; i < color_combination[src_id].length; ++i) {
-              console.log(" >> for_cur_color info : " + color_combination[src_id][i]);
-              if (color_combination[src_id][i] == dst_code)
-                resovle("match");
+            res.dst_id = dst_id;
+          }).catch(function(err) {
+              console.log(err);
+          })
+        )
+        .then(function() {
+            var dst_code = color_pallet[res.dst_id].code;
+            for (i = 0; i < color_combination[res.src_id].length; ++i) {
+                console.log(" >> for_cur_color info : " + color_combination[res.src_id][i]);
+                if (color_combination[res.src_id][i] == dst_code)
+                  resovle("match");
             }
             resovle("unmatch");
-        });
-    })
+        })
+    });
 }
 //4.2 컬러 계통찾기
 function getColorCategory(color_name) {
-    return new Promise(function (resovle, reject){
+    new Promise(function (resovle, reject) {
         for (i = 0; i < BASE_COLOR_NUM; ++i) {
-            if (color_name == color_pallet[i].name)
-                // return i;
-                resolve(i);
-        )};
-    }
+          if (color_name == color_pallet[i].name)
+            resolve(i);
+        }
+        reject(new Error("\n>> getColorCategory got error"));
+    })
 }
 // function getColorCategory(color_name) {
 //     for (i = 0; i < BASE_COLOR_NUM; ++i) {
