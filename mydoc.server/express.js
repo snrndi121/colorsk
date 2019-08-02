@@ -240,7 +240,7 @@ function IsMatchColor(src_param, dst_param) {
     console.log("\n### Server method_IsMatchColor() ###\n >> handling the 2 color case");
     console.log(" >> target_dst_info : " + dst_param.value);
     for (i = 0; i < color_combination[src_id].length; ++i) {
-        console.log(" >> for_cur_color info : " + color_pallet[src_id][i]);
+        console.log(" >> for_cur_color info : " + color_combination[src_id][i]);
         if (color_combination[src_id][i] == dst_param.value)
           return "match";
     }
