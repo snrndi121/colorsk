@@ -208,8 +208,6 @@ app.post('/MC.ACTION.match', function (req, res){
         console.log(body);
         res.json(body);
     })
-).then(function() {
-    console.log(">> all done");
 })
 // app.post('/MC.ACTION.match', function (req, res){
 //   console.log("\n>> APi_match from SK match");
@@ -266,7 +264,7 @@ app.post('/MC.ACTION.match', function (req, res){
 */
 //4.1 두 컬러간 매칭 파악
 function IsMatchColor(src_param, dst_param) {
-    new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var res = {src_id : '', dst_id : ''};
         //exception
         if (!src_param) {
@@ -306,7 +304,7 @@ function IsMatchColor(src_param, dst_param) {
 }
 //4.2 컬러 계통찾기
 function getColorCategory(color_name) {
-    new Promise(function (resovle, reject) {
+    return new Promise(function (resolve, reject) {
         for (i = 0; i < BASE_COLOR_NUM; ++i) {
           if (color_name == color_pallet[i].name)
             resolve(i);
