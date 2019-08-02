@@ -11,7 +11,7 @@ var port = process.env.PORT || 3000;
 var cors = require('cors');//cross-browsing
 // var mysql = require('mysql');//mysql
 // ***********************************************************
-// mysql-booster 관리
+// mysql-booster
 // var MysqlPoolBooster = require('mysql-pool-booster');
 // mysql = MysqlPoolBooster(mysql);
 // // db-configuration 적용
@@ -37,9 +37,46 @@ app.engine('html', require('ejs').renderFile);
 
 app.use(cors());//cross-browsing
 //1.3. 변수 설정
-// const tb_disease = "tb_disease_list";
-// const tb_body = "tb_bodypart_list";
-/*
+const BASE_COLOR_NUM = 16;
+//color_info
+const color_pallet = [
+  {index : 0, code : "c000", name = "WHITE"},
+  {index : 1, code : "c001", name = "BLACK"},
+  {index : 2, code : "c002", name = "RED"},
+  {index : 3, code : "c003", name = "ORANGE"},
+  {index : 4, code : "c004", name = "YELLOW"},
+  {index : 5, code : "c005", name = "GREEN"},
+  {index : 6, code : "c006", name = "BLUE"},
+  {index : 7, code : "c007", name = "INDIGO"},
+  {index : 8, code : "c008", name = "PURPLE"},
+  {index : 9, code : "c009", name = "GOLD"},
+  {index : 10, code : "c010", name = "SILVER"},
+  {index : 11, code : "c011", name = "PINK"},
+  {index : 12, code : "c012", name = "SKY"},
+  {index : 13, code : "c013", name = "IVORY"},
+  {index : 14, code : "c014", name = "BEIGE"},
+  {index : -1, code : "cccc", name : "err_undef_color"}
+];
+//basic combination
+const color_combination = [
+    [""],//WHITE(0)
+    [""],//BLACK(1)
+    ["c001", "c004"],//RED(2)
+    ["c004", "c005", "c010"],//ORAGNE(3)
+    ["c002", "c003", "c006", "c004", "c007", "c008", "c004", "c009", "c014", "c012"],//YELLOW(4)
+    ["c001", "c003", "c008", "c010", "c011", "c013", "c014"],//GREEN(5)
+    ["c004", "c012", "c014"],//BLUE(6)
+    ["c004", "c009", "c010", "c014"],//INDIGO(7)
+    ["c004", "c005"],//PURPLE(8)
+    ["c004", "c007", "c012"],//GOLD(9)
+    ["c003", "c005", "c007", "c014"],//SILVER(10)
+    ["c005", "c012", "c013"],//PINK(11)
+    ["c000", "c004", "c011", "c006", "c004", ],//SKY(12)
+    ["c000", "c005", "c011"],//IVORY(13)
+    ["c004", "c005", "c006", "c007", "c012"],//BEIGE(14)
+];
+//color-priority (not yet)
+/*'WHITE'
   *
   *******  part2.프론트-화면 렌더링 *******
   *
@@ -148,18 +185,19 @@ app.post('/MC.ACTION.match', function (req, res){
   var mresultColor = "";
   console.log(mAction);
   //branch-action
-  if (mParams.dst_color && mParams.src_color) {
-      //2cloth + 2color
-      //If the two color are matched well,
-      mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
-  } else if (mParams.dst_cloth && mParams.src_cloth) {
-      //2cloth + 1color
-      //what the color matched well is it
-      mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
-  } else {
-      //default
-      mresultColor ="";
-  }
+  // if (mParams.dst_color && mParams.src_color) {
+  //     //2cloth + 2color, 2color
+  //     //If the two color are matched well,
+  //     mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
+  // } else if (mParams.dst_cloth && mParams.src_cloth) {
+  //     //2cloth + 1color
+  //     //what the color matched well is it
+  //     mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
+  // } else {
+  //     //default
+  //     mresultColor ="";
+  // }
+  mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
   var mresultCode = 'OK';
   var body = {
       version : mVersion,
@@ -183,65 +221,33 @@ app.post('/MC.ACTION.match', function (req, res){
   *
 */
 //4.1 두 컬러간 매칭 파악
-function IsMatchColor(color_src, color_dst) {
+function IsMatchColor(src_param, dst_param) {
     var res = "";
     //exception
-    if (!color_src) {return res;}
-    //2color
-
+    if (!src_param) {
+      console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
+      return res;
+    }
     //1color
+    src_id = getColorCategory(src_param.value);
+    if (!dst_param) {
+        console.log("\n### Server method_IsMatchColor() ###\n >> handling the 1 color case");
+        return color_pallet[src_id].code;
+    }
+    //2color
+    console.log("\n### Server method_IsMatchColor() ###\n >> handling the 2 color case");
+    for (i = 0; i < color_pallet[src_id].length; ++i) {
+        if (color_pallet[src_id][i] == dst_param.value)
+          return "match";
+    }
+    return "unmatch"
 }
 //4.2 컬러 계통찾기
-function getColorCategory(color_src) {
-    var color_code ="";
-    switch(color_src) {
-        case 'WHITE' :
-          color_code = "c000"
-          break;
-        case 'BLACK' :
-          color_code = "c001"
-          break;
-        case 'RED' :
-          color_code = "c002"
-          break;
-        case 'ORANGE' :
-          color_code = "c003"
-          break;
-        case 'YELLOW' :
-          color_code = "c004"
-          break;
-        case 'GREEN' :
-          color_code = "c005"
-          break;
-        case 'BLUE' :
-          color_code = "c006"
-          break;
-        case 'INDIGO' :
-          color_code = "c007"
-          break;
-        case 'PURPLE' :
-          color_code = "c008"
-          break;
-        case 'GOLD' :
-          color_code = "c009"
-          break;
-        case 'SILVER' :
-          color_code = "c010"
-          break;
-        case 'PINK' :
-          color_code = "c011"
-          break;
-        case 'SKY' :
-          color_code = "c012"
-          break;
-        case 'IVORY' :
-          color_code = "c013"
-          break;
-        case 'BEIGE' :
-          color_code = "c014"
-          break;
+function getColorCategory(color_name) {
+    for (i = 0; i < BASE_COLOR_NUM; ++i) {
+        if (color_name == color_pallet[i].name)
+            return i;
     }
-    return color_code;
 }
 //4.$. 서버처리-대기
 app.listen(3000);
