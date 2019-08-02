@@ -176,71 +176,6 @@ app.post('/', function (req, res) {
   };
   res.json(body);
 })
-// app.post('/MC.ACTION.match', function (req, res){
-//   console.log("\n>> APi_match from SK match");
-//   var act// app.post('/MC.ACTION.match', function (req, res){
-//   console.log("\n>> APi_match from SK match");
-//   var action_name = req.body.action.actionName;
-//   var mVersion = req.body.version;
-//   var mAction = req.body.action;
-//   var mParams = req.body.action.parameters;
-//   var mresultCode = 'OK';
-//   console.log(mAction);
-//   console.log(mParams);
-//   IsMatchColor(mParams.src_color, mParams.dst_color)
-//   .then(function(match_res) {
-//           console.log("IsMatchColor");
-//           var body = {
-//             version : mVersion,
-//             resultCode : mresultCode,
-//             output : {
-//               src_cloth : mParams.src_cloth,//action_params.requestNum,
-//               src_color : mParams.src_color,
-//               dst_cloth : mParams.dst_cloth,
-//               dst_color : mParams.dst_color,
-//               query_type : mParams.query_type,
-//               resultCode : mresultCode,
-//               resultColor : match_res
-//             },
-//             directives : []
-//           };
-//     })
-//     .then(function() {
-//         console.log(">> last call");
-//         console.log(body);
-//         res.json(body);
-//     })
-// })ion_name = req.body.action.actionName;
-//   var mVersion = req.body.version;
-//   var mAction = req.body.action;
-//   var mParams = req.body.action.parameters;
-//   var mresultCode = 'OK';
-//   console.log(mAction);
-//   console.log(mParams);
-//   IsMatchColor(mParams.src_color, mParams.dst_color)
-//   .then(function(match_res) {
-//           console.log("IsMatchColor");
-//           var body = {
-//             version : mVersion,
-//             resultCode : mresultCode,
-//             output : {
-//               src_cloth : mParams.src_cloth,//action_params.requestNum,
-//               src_color : mParams.src_color,
-//               dst_cloth : mParams.dst_cloth,
-//               dst_color : mParams.dst_color,
-//               query_type : mParams.query_type,
-//               resultCode : mresultCode,
-//               resultColor : match_res
-//             },
-//             directives : []
-//           };
-//     })
-//     .then(function() {
-//         console.log(">> last call");
-//         console.log(body);
-//         res.json(body);
-//     })
-// })
 app.post('/MC.ACTION.match', function (req, res){
   console.log("\n>> APi_match from SK match");
   var action_name = req.body.action.actionName;
@@ -274,13 +209,15 @@ app.post('/MC.ACTION.match', function (req, res){
         .then( function(dst_id) {
             console.log("\n >> (2)find the dest_id : " + dst_id);
             IsMatchColor(src_id, dst_id).then( function(match_res) {
+                console.log("\n >> Last called\n");
                 body.resultColor = match_res;
-                console.log("\nres\n");
                 console.log(body);
                 return res.json(body);
             })
             .catch(function(err) {
                 console.log("\n >>(3) sorry, IsMatchColor has Invalid index");
+                body.resultCode = err;
+
                 return res.json(body);
             });
         })
@@ -288,6 +225,7 @@ app.post('/MC.ACTION.match', function (req, res){
             console.log("\n >> (2)sorry, server cannot find the source color");
             return res.json(body);
         });
+
   })
   .catch(function(err) {
       console.log("\n >> (1)sorry, server cannot find the source color");
@@ -299,11 +237,13 @@ app.post('/MC.ACTION.match', function (req, res){
   ******* part4.서버-함수 선언 *******
   *
 */
+
 //4.1 두 컬러간 매칭 파악
 function IsMatchColor(src_color_id, dst_color_id) {
     return new Promise(function (resolve, reject) {
         //exception
         console.log(">> func_IsMatchColor IN");
+        console.log("para1 : " + src_color_id + ",para2 : " + dst_color_id);
         if (!src_color_id || !dst_color_id) {
             console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
             reject("err_undef_color");
@@ -313,7 +253,7 @@ function IsMatchColor(src_color_id, dst_color_id) {
               console.log(" >> for_cur_color info : " + color_combination[src_color_id][i]);
               if (color_combination[src_color_id][i] == dst_code) {
                   console.log(">> func_IsMatchColor OUT");
-                  resovle("match");
+                  resolve("match");
               }
         }
         console.log(">> func_IsMatchColor OUT");
