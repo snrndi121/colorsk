@@ -177,26 +177,14 @@ app.post('/', function (req, res) {
   res.json(body);
 })
 app.post('/MC.ACTION.match', function (req, res){
-  console.log("\n>> APi_match from SK search");
+  console.log("\n>> APi_match from SK match");
   var action_name = req.body.action.actionName;
   var mVersion = req.body.version;
   var mAction = req.body.action;
   var mParams = req.body.action.parameters;
   var mresultColor = "";
   console.log(mAction);
-  //branch-action
-  // if (mParams.dst_color && mParams.src_color) {
-  //     //2cloth + 2color, 2color
-  //     //If the two color are matched well,
-  //     mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
-  // } else if (mParams.dst_cloth && mParams.src_cloth) {
-  //     //2cloth + 1color
-  //     //what the color matched well is it
-  //     mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
-  // } else {
-  //     //default
-  //     mresultColor ="";
-  // }
+  console.log(mParams);
   mresultColor = IsMatchColor(mParams.src_color, mParams.dst_color);
   console.log("\n>> IsMatchColor result : " + mresultColor);
   var mresultCode = 'OK';
@@ -215,7 +203,6 @@ app.post('/MC.ACTION.match', function (req, res){
       directives : []
   };
   console.log("\nres_json\n" + JSON.parse(body));
-  console.log("\nres_json\n", body);
   res.json(body);
 })
 /*
