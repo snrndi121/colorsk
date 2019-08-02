@@ -279,6 +279,10 @@ app.post('/MC.ACTION.match', function (req, res){
                 console.log(body);
                 return res.json(body);
             })
+            .catch(function(err) {
+                console.log("\n >>(3) sorry, IsMatchColor has Invalid index");
+                return res.json(body);
+            }
           })
         .catch(function(err) {
             console.log("\n >> (2)sorry, server cannot find the source color");
@@ -302,12 +306,12 @@ function IsMatchColor(src_color_id, dst_color_id) {
         console.log(">> func_IsMatchColor IN");
         if (!src_color_id || !dst_color_id) {
             console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
-            resolve("err_undef_color");
+            reject("err_undef_color");
         }
-        var dst_code = color_pallet[dst_color_id].code;
-        for (i = 0; i < color_combination[res.src_id].length; ++i) {
-              console.log(" >> for_cur_color info : " + color_combination[res.src_id][i]);
-              if (color_combination[res.src_id][i] == dst_code) {
+        const dst_code = color_pallet[dst_color_id].code;
+        for (i = 0; i < color_combination[src_color_id].length; ++i) {
+              console.log(" >> for_cur_color info : " + color_combination[src_color_id][i]);
+              if (color_combination[src_color_id][i] == dst_code) {
                   console.log(">> func_IsMatchColor OUT");
                   resovle("match");
               }
