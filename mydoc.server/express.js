@@ -231,13 +231,16 @@ function IsMatchColor(src_param, dst_param) {
     }
     //1color
     src_id = getColorCategory(src_param.value);
+    console.log(" >> src_color info : " + color_pallet[src_id].index + " : " + color_pallet[src_id].code + " : " + color_pallet[src_id].name);
     if (!dst_param) {
         console.log("\n### Server method_IsMatchColor() ###\n >> handling the 1 color case");
         return color_pallet[src_id].code;
     }
     //2color
     console.log("\n### Server method_IsMatchColor() ###\n >> handling the 2 color case");
+    console.log(" >> target_dst_info : " + dst_param.value);
     for (i = 0; i < color_pallet[src_id].length; ++i) {
+        console.log(" >> for_cur_color info : " + color_pallet[src_id][i]);
         if (color_pallet[src_id][i] == dst_param.value)
           return "match";
     }
