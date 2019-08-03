@@ -19,14 +19,20 @@
 빨간색이랑 초록색 매칭 어때?
 빨간색이랑 초록색은 잘 매칭돼?
 빨간색이랑 초록색 조합 어때?
+빨간색이랑 초록색 어때?
 
 <!-- Entity : Cloth 2 + Color 1 -->
 #CID_CLOTH_SRC,DST, CID_COLOR_SRC
 (1) Cloth with the color -> what colored cloth?
 상의가 빨간색이면 바지는 뭐입지?
 빨간 상의면 무슨 바지입지?
-빨간 상의에 바지는 뭐입지?
 빨간 상의랑 무슨 바지가 어울릴까?
+빨간 상의에 바지는 뭐입지?
+빨간 상의에 바지는 무슨 색 입지?
+빨간 상의에 어떤 바지 입지?
+빨간 상의에 바지 뭐 입지?
+빨간 상의에 무슨 색 바지 입지?
+빨간 상의에 무슨 바지 입지?
 
 (2) what colored cloth -> cloth with the color
 어떤 바지가 빨간 상의랑 어울리지?
