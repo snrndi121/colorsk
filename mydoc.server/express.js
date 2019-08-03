@@ -171,8 +171,7 @@ app.post('/', function (req, res) {
 		requestNum : 'hoho',//action_params.requestNum,
 		resultCode : mresultCode,
 		resultDesc : action_params.requestNum + "is Called"
-	},
-	directives : []
+	}
   };
   res.json(body);
 })
