@@ -183,8 +183,7 @@ app.post('/MC.ACTION.match', function (req, res){
   var mAction = req.body.action;
   var mParams = req.body.action.parameters;
   var mresultCode = 'OK';
-  //console.log(mAction);
-	console.log(req.body);
+  console.log(mAction);
   var body = {
     version : mVersion,
     resultCode : mresultCode,
@@ -200,17 +199,19 @@ app.post('/MC.ACTION.match', function (req, res){
     },
     directives : []
   };
-  //get color code from request 'src_color', 'dst_color'
+  //Part1. Response 'Match' query
   IsMatchColor(mParams.src_color, mParams.dst_color)
   .then(function(match_res) {
-      body.output.resultColor = match_res;
-      console.log(body);
-      return res.json(body);
+    body.output.resultColor = match_res;
+    console.log(body);
+    return res.json(body);
   })
   .catch(function(err_code) {
-      body.resultCode = err_code;
-      return res.json(body);
+    body.resultCode = err_code;
+    return res.json(body);
   });
+  //Part2. Response 'Tone' query
+  //get color code from request 'src_color', 'dst_color'
 });
 /*
   *
@@ -259,26 +260,6 @@ function IsMatchColor(src_color, dst_color) {
           });
     });
 }
-// function IsMatchColor(src_color_id, dst_color_id) {
-//     return new Promise(function (resolve, reject) {
-//         //exception
-//         console.log(">> func_IsMatchColor IN");
-//         if (!src_color_id || !dst_color_id) {
-//             console.log("\n### Server method_IsMatchColor() ###\n >> error(): it has no src_color");
-//             reject("err_undef_color");
-//         }
-//         const dst_code = color_pallet[dst_color_id].code;
-//         for (i = 0; i < color_combination[src_color_id].length; ++i) {
-//               console.log(" >> for_cur_color info : " + color_combination[src_color_id][i]);
-//               if (color_combination[src_color_id][i] == dst_code) {
-//                   console.log(">> func_IsMatchColor OUT");
-//                   resolve("match");
-//               }
-//         }
-//         console.log(">> func_IsMatchColor OUT");
-//         resolve("unmatch");
-//     });
-// }
 //4.2 컬러 계통찾기(Find color's index from color_pallet)
 function getColorCategory(color_name) {
     return new Promise(function (resolve, reject) {
@@ -294,6 +275,12 @@ function getColorCategory(color_name) {
               resolve(i);
           }
         }
+    })
+}
+//4.3 컬러 톤
+function WhatToneColor(src_color) {
+    return new Promise(function (resolve, reject) {
+        
     })
 }
 //4.$. 서버처리-대기
