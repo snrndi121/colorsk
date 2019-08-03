@@ -212,61 +212,6 @@ app.post('/MC.ACTION.match', function (req, res){
       return res.json(body);
   });
 });
-// app.post('/MC.ACTION.match', function (req, res){
-//   console.log("\n>> APi_match from SK match");
-//   var action_name = req.body.action.actionName;
-//   var mVersion = req.body.version;
-//   var mAction = req.body.action;
-//   var mParams = req.body.action.parameters;
-//   var mresultColor = "";
-//   var mresultCode = 'OK';
-//   console.log(mAction);
-//   console.log(mParams);
-//   var src_id, dst_id;
-//   var body = {
-//     version : mVersion,
-//     resultCode : mresultCode,
-//     output : {
-//       src_cloth : mParams.src_cloth,
-//       src_color : mParams.src_color,
-//       dst_cloth : mParams.dst_cloth,
-//       dst_color : mParams.dst_color,
-//       query_type : mParams.query_type,
-//       resultCode : mresultCode,
-//       resultColor : ""
-//     },
-//     directives : []
-//   };
-//   //get color code from request 'src_color', 'dst_color'
-//   getColorCategory(mParams.src_color.value)
-//   .then( function(src_id) {
-//         console.log("\n >> (1)find the source_id : " + src_id);
-//         getColorCategory(mParams.dst_color.value)
-//         .then( function(dst_id) {
-//             console.log("\n >> (2)find the dest_id : " + dst_id);
-//             IsMatchColor(src_id, dst_id).then( function(match_res) {
-//                 console.log("\n >> Last called\n");
-//                 body.output.resultColor = match_res;
-//                 console.log(body);
-//                 return res.json(body);빨간색이랑 노란색 매칭 어울려?
-//             })
-//             .catch(function(err) {
-//                 console.log("\n >> (3)sorry, IsMatchColor has Invalid index");
-//                 body.resultCode = err;
-//                 return res.json(body);
-//             });
-//         })
-//         .catch(function(err) {
-//             console.log("\n >> (2)sorry, server cannot find the source color");
-//             return res.json(body);
-//         });
-//
-//   })
-//   .catch(function(err) {
-//       console.log("\n >> (1)sorry, server cannot find the source color");
-//       return res.json(body);
-//   });
-// })
 /*
   *
   ******* part4.서버-함수 선언 *******
@@ -299,7 +244,7 @@ function IsMatchColor(src_color, dst_color) {
                     }
                     if (i == color_combination[src_id].length) {
                         console.log(">> func_IsMatchColor OUT");
-                        resolve("unmatch");
+                        resolve(color_pallet[src_id].code);
                     }
                 })
                 .catch(function(err_code) {
