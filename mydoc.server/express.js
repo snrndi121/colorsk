@@ -183,7 +183,8 @@ app.post('/MC.ACTION.match', function (req, res){
   var mAction = req.body.action;
   var mParams = req.body.action.parameters;
   var mresultCode = 'OK';
-  console.log(mAction);
+  //console.log(mAction);
+	console.log(req.body);
   var body = {
     version : mVersion,
     resultCode : mresultCode,
