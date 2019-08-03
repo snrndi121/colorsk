@@ -171,7 +171,8 @@ app.post('/', function (req, res) {
 		requestNum : 'hoho',//action_params.requestNum,
 		resultCode : mresultCode,
 		resultDesc : action_params.requestNum + "is Called"
-	}
+	},
+	directives : []
   };
   res.json(body);
 })
@@ -192,6 +193,7 @@ app.post('/MC.ACTION.match', function (req, res){
       dst_cloth : mParams.dst_cloth,
       dst_color : mParams.dst_color,
       query_type : mParams.query_type,
+      response_type : mParams.query_type.value,
       resultCode : mresultCode,
       resultColor : ""
     },
