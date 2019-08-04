@@ -58,23 +58,26 @@ const color_pallet = [
   {index : -1, code : "cccc", name : "err_undef_color"}
 ];
 //basic combination
-const color_combination = [
-    [""],//WHITE(0)
-    [""],//BLACK(1)
-    ["c001", "c004"],//RED(2)
-    ["c004", "c005", "c010"],//ORAGNE(3)
-    ["c002", "c003", "c006", "c004", "c007", "c008", "c004", "c009", "c014", "c012"],//YELLOW(4)
-    ["c001", "c003", "c008", "c010", "c011", "c013", "c014"],//GREEN(5)
-    ["c004", "c012", "c014"],//BLUE(6)
-    ["c004", "c009", "c010", "c014"],//INDIGO(7)
-    ["c004", "c005"],//PURPLE(8)
-    ["c004", "c007", "c012"],//GOLD(9)
-    ["c003", "c005", "c007", "c014"],//SILVER(10)
-    ["c005", "c012", "c013"],//PINK(11)
-    ["c000", "c004", "c011", "c006", "c004", ],//SKY(12)
-    ["c000", "c005", "c011"],//IVORY(13)
-    ["c004", "c005", "c006", "c007", "c012"],//BEIGE(14)
-];
+const color_match = [
+    best : {
+      [""],//WHITE(0)
+      [""],//BLACK(1)
+      ["c001", "c004"],//RED(2)
+      ["c004", "c005", "c010"],//ORAGNE(3)
+      ["c002", "c003", "c006", "c004", "c007", "c008", "c004", "c009", "c014", "c012"],//YELLOW(4)
+      ["c001", "c003", "c008", "c010", "c011", "c013", "c014"],//GREEN(5)
+      ["c004", "c012", "c014"],//BLUE(6)
+      ["c004", "c009", "c010", "c014"],//INDIGO(7)
+      ["c004", "c005"],//PURPLE(8)
+      ["c004", "c007", "c012"],//GOLD(9)
+      ["c003", "c005", "c007", "c014"],//SILVER(10)
+      ["c005", "c012", "c013"],//PINK(11)
+      ["c000", "c004", "c011", "c006", "c004", ],//SKY(12)
+      ["c000", "c005", "c011"],//IVORY(13)
+      ["c004", "c005", "c006", "c007", "c012"],//BEIGE(14)
+    },
+    ban : []
+};
 //color-priority (not yet)
 /*'WHITE'
   *
@@ -108,43 +111,6 @@ app.get('/searchAll', function (req, res) {
 */
 //크롤링 : http://www.amc.seoul.kr/asan/healthinfo/disease/diseaseSubmain.do#
 /*
-  Requeset Body
-{
-    "version": "2.0",
-    "action": {
-        "actionName": "{{string}}",
-        "parameters": {
-            KEY: {
-                "type": "{{string}}",
-                "value": VALUE
-            }
-        }
-    },
-    "event": {
-        "type": "{{string}}"
-    },
-    "context": {
-        "session": {
-            "accessToken": "{{string}}"
-        },
-        "device": {
-            "type": "{{string}}",
-            "state": {
-                KEY: VALUE
-            }
-        },
-        "supportedInterfaces": {
-            "AudioPlayer": {
-                "playerActivity": "PLAYING",
-                "token": "string value",
-                "offsetInMilliseconds": 100000
-            }
-        },
-        "privatePlay" : { } // reserved
-    }
-}
-*/
-/*
   *   < Action category >
   *
   * 1. MYDOC.INTENT.match -> 컬러 매칭 여부(옷 + 색깔 || 색깔)
@@ -154,36 +120,20 @@ app.get('/searchAll', function (req, res) {
     1.$. default
   *
 */
-//3.1.Main -> ok
-app.post('/', function (req, res) {
-  console.log("\n>> APi_main from SK main");
-  var action_name = req.body.action.actionName;
-  var nugu_version = req.body.version;
-  var action = req.body.action;
-  var action_params = req.body.action.parameters;
-
-  console.log(action);
-  var mresultCode = 'OK';
-  var body = {
-	version : nugu_version,
-	resultCode : mresultCode,
-	output : {
-		requestNum : 'hoho',//action_params.requestNum,
-		resultCode : mresultCode,
-		resultDesc : action_params.requestNum + "is Called"
-	},
-	directives : []
-  };
-  res.json(body);
+//3.0 health
+app.get('/health', function (req, res) {
+    app.sendStatus(200);
 })
+//3.1.API_match -> ok
 app.post('/MC.ACTION.match', function (req, res){
   console.log("\n>> APi_match from SK match");
+  //Get value from body
   var action_name = req.body.action.actionName;
   var mVersion = req.body.version;
-  var mAction = req.body.action;
   var mParams = req.body.action.parameters;
+  var mResponse = mParams.query_type;
   var mresultCode = 'OK';
-  console.log(mAction);
+  //Set response body
   var body = {
     version : mVersion,
     resultCode : mresultCode,
@@ -193,7 +143,7 @@ app.post('/MC.ACTION.match', function (req, res){
       dst_cloth : mParams.dst_cloth,
       dst_color : mParams.dst_color,
       query_type : mParams.query_type,
-      response_type : mParams.query_type.value,
+      response_type : mResponse.value,
       resultCode : mresultCode,
       resultColor : ""
     },
@@ -210,7 +160,10 @@ app.post('/MC.ACTION.match', function (req, res){
     body.resultCode = err_code;
     return res.json(body);
   });
-  //Part2. Response 'Tone' query
+  //Part2. Response 'UNMATCH' query
+  //Part3. Response 'SELECT' query
+  //Part4. Response 'TONE' query
+  //Part5. Response 'SIBLING' query
   //get color code from request 'src_color', 'dst_color'
 });
 /*
@@ -231,28 +184,35 @@ function IsMatchColor(src_color, dst_color) {
         getColorCategory(src_color.value)
         .then(function (src_id) {
                 console.log("\n >> (1)find the source_id : " + src_id);
-                getColorCategory(dst_color.value)
-                .then(function (dst_id) {
-                    console.log("\n >> (2)find the dest_id : " + dst_id);
-                    const dst_code = color_pallet[dst_id].code;
-                    var i = 0;
-                    for (; i < color_combination[src_id].length; ++i) {
-                          console.log(" >> for_cur_color info : " + color_combination[src_id][i]);
-                          if (color_combination[src_id][i] == dst_code) {
-                              console.log(">> func_IsMatchColor OUT");
-                              resolve("match");
-                          }
-                    }
-                    if (i == color_combination[src_id].length) {
-                        console.log(">> func_IsMatchColor OUT");
-                        resolve(color_pallet[src_id].code);
-                    }
-                })
-                .catch(function(err_code) {
-                    console.log("\n >> (2)sorry, server cannot find the source color");
-                    reject(err_code);
-                });
-
+                //case1 : 1color + xCloth
+                if (!dst_color) {
+                  console.log(">> func_IsMatchColor OUT");
+                  resolve(color_pallet[src_id].code);
+                }
+                //case2 : 2color + xCloth
+                else {
+                    getColorCategory(dst_color.value)
+                    .then(function (dst_id) {
+                        console.log("\n >> (2)find the dest_id : " + dst_id);
+                        const dst_code = color_pallet[dst_id].code;
+                        var i = 0;
+                        for (; i < color_match.best[src_id].length; ++i) {
+                              console.log(" >> for_cur_color info : " + color_match.best[src_id][i]);
+                              if (color_match.best[src_id][i] == dst_code) {
+                                  console.log(">> func_IsMatchColor OUT");
+                                  resolve("match");
+                              }
+                        }
+                        if (i == color_match.best[src_id].length) {
+                            console.log(">> func_IsMatchColor OUT");
+                            resolve(color_pallet[src_id].code);
+                        }
+                    })
+                    .catch(function(err_code) {
+                        console.log("\n >> (2)sorry, server cannot find the source color");
+                        reject(err_code);
+                    });
+                }
           })
           .catch(function(err_code) {
               console.log("\n >> (1)sorry, server cannot find the source color");
@@ -268,7 +228,6 @@ function getColorCategory(color_name) {
         if (!color_name || BASE_COLOR_NUM < 0) {
             reject("err_undef_pallet");
         }
-        //noraml
         for (i = 0; i < BASE_COLOR_NUM; ++i) {
           if (color_name == color_pallet[i].name) {
               console.log(">> func_getColorCategory OUT");
@@ -280,8 +239,12 @@ function getColorCategory(color_name) {
 //4.3 컬러 톤
 function WhatToneColor(src_color) {
     return new Promise(function (resolve, reject) {
-        
+
     })
+}
+//4.4 매칭이 가능한 옷인지
+function checkValidCloth(src_cloth, dst_color) {
+
 }
 //4.$. 서버처리-대기
 app.listen(3000);
