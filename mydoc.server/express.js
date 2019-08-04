@@ -58,7 +58,7 @@ const color_pallet = [
   {index : -1, code : "cccc", name : "err_undef_color"}
 ];
 //basic combination
-const color_match = [
+const color_match = {
     best : {
       [""],//WHITE(0)
       [""],//BLACK(1)
