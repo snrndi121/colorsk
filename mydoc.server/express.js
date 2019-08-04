@@ -9,23 +9,6 @@ var app = express();
 var request = require('request');//request
 var port = process.env.PORT || 3000;
 var cors = require('cors');//cross-browsing
-// var mysql = require('mysql');//mysql
-// ***********************************************************
-// mysql-booster
-// var MysqlPoolBooster = require('mysql-pool-booster');
-// mysql = MysqlPoolBooster(mysql);
-// // db-configuration 적용
-// mysql.createPool(dhttps://github.com/snrndi121/colorsk.gitb_config);
-// ***********************************************************
-//1.2.설정-연동
-// var connection = mysql.createConnection(//mysql
-// {
-//   host     : '127.0.0.1',//localhost로 하면 에러남
-//   user     : 'root',
-//   password : 'Flower5wantnight',
-//   database : 'mydoc'
-// });
-// connection.connect();
 
 app.use(express.static(__dirname + '/public'));//express
 app.use(express.json());
@@ -38,6 +21,17 @@ app.engine('html', require('ejs').renderFile);
 app.use(cors());//cross-browsing
 //1.3. 변수 설정
 const BASE_COLOR_NUM = 16;
+//basic cloth combination
+const closet_match = {
+    "TOP" : ["PANTS"],
+    "PANTS" : ["TOP", "BELTS"],
+    "SHOES" : ["PANTS", "SOCKS", "BELTS"],
+    "SOCKS" : ["SHOE"],
+    "BELTS" : ["PANTS", "SHOE"],
+    "Y-SHIRT" : ["NECKTIE"],
+    "NECKTIE" : ["Y-SHIRT"],
+    "COAT" : ["SHOE", "PANTS", "TOP"]
+}
 //color_info
 const color_pallet = [
   {index : 0, code : "c000", name : "WHITE"},
@@ -57,7 +51,7 @@ const color_pallet = [
   {index : 14, code : "c014", name : "BEIGE"},
   {index : -1, code : "cccc", name : "err_undef_color"}
 ];
-//basic combination
+//basic color combination
 const color_match = {
     best : [
       [""],//WHITE(0)
@@ -243,8 +237,10 @@ function WhatToneColor(src_color) {
     })
 }
 //4.4 매칭이 가능한 옷인지
-function checkValidCloth(src_cloth, dst_color) {
-
+function IsMatchCloth(src_cloth, dst_colth) {
+    //src_cloth일 때 신경써야하는 옷
+    //dst_cloth가 있으면 거기에 해당되는 지 알려주고,
+    //아니라면, 그냥 그 중에 하나 말해주면 됨.
 }
 //4.$. 서버처리-대기
 app.listen(3000);
