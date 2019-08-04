@@ -59,7 +59,7 @@ const color_pallet = [
 ];
 //basic combination
 const color_match = {
-    best : {
+    best : [
       [""],//WHITE(0)
       [""],//BLACK(1)
       ["c001", "c004"],//RED(2)
@@ -75,7 +75,7 @@ const color_match = {
       ["c000", "c004", "c011", "c006", "c004", ],//SKY(12)
       ["c000", "c005", "c011"],//IVORY(13)
       ["c004", "c005", "c006", "c007", "c012"],//BEIGE(14)
-    },
+    ],
     ban : []
 };
 //color-priority (not yet)
