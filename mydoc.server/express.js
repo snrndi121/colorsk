@@ -23,14 +23,40 @@ app.use(cors());//cross-browsing
 const BASE_COLOR_NUM = 16;
 //basic cloth combination
 const closet_match = {
-    "TOP" : ["PANTS"],
-    "PANTS" : ["TOP", "BELTS"],
-    "SHOES" : ["PANTS", "SOCKS", "BELTS"],
-    "SOCKS" : ["SHOE"],
-    "BELTS" : ["PANTS", "SHOE"],
-    "Y-SHIRT" : ["NECKTIE"],
-    "NECKTIE" : ["Y-SHIRT"],
-    "COAT" : ["SHOE", "PANTS", "TOP"]
+    best : {
+      "TOP" : ["PANTS"],
+      "PANTS" : ["TOP", "BELTS"],
+      "SHOES" : ["PANTS", "SOCKS", "BELTS"],
+      "SKRITS" : ["TOP"]
+      "SOCKS" : ["SHOE"],
+      "BELTS" : ["PANTS", "SHOE"],
+      "T-SHIRTS" : ["PANTS", "SHOES"],
+      "Y-SHIRTS" : ["NECKTIE", "PANTS"],
+      "NECKTIE" : ["Y-SHIRT", "BELTS"],
+      "COAT" : ["SHOES", "PANTS", "TOP"],
+      "TRAINNING" : ["SNEAKERS"],
+      "ONE-PIECE" : ["SHOES"],//구두나 힐은 별도 마련할 것
+      "SNEAKERS" : [],
+      "HILL" : [],
+      "STOCKING" : []
+    },
+    ban : {
+      "TOP" : [""],
+      "T-SHIRTS" : ["Y-SHIRTS", "SHOES"],
+      "Y-SHIRTS" : ["T-SHIRTS"],
+      "PANTS" : ["SKRITS", "ONE-PIECE"],
+      "SHOES" : ["HILL", "SNEAKERS"],
+      "SKRITS" : ["PANTS"]
+      "BELTS" : [],
+      "NECKTIE" : ["T-SHIRT"],
+      "SOCKS" : [""],
+      "TRAINNING" : ["SHOES"]
+      "COAT" : [""],
+      "HILL" : ["SNEAKERS", "SHOES"],
+      "SNEAKERS" : ["SHOES", "HILL"],
+      "ONE-PIECE" : ["SKRITS", "PANTS"],
+      "STOCKING" : ["BELTS", "PANTS", "SOCKS", "TRAINNING", ]
+    }
 }
 //color_info
 const color_pallet = [
@@ -139,7 +165,8 @@ app.post('/MC.ACTION.match', function (req, res){
       query_type : mParams.query_type,
       response_type : mResponse.value,
       resultCode : mresultCode,
-      resultColor : ""
+      resultColor : "",
+      advice_msg : ""
     },
     directives : []
   };
@@ -156,9 +183,13 @@ app.post('/MC.ACTION.match', function (req, res){
   });
   //Part2. Response 'UNMATCH' query
   //Part3. Response 'SELECT' query
-  //Part4. Response 'TONE' query
-  //Part5. Response 'SIBLING' query
-  //get color code from request 'src_color', 'dst_color'
+});
+app.post('/MC.ACTION.ton'), function (req, res) {
+
+});
+app.post('/MC.ACTION.about'), function (req, res) {
+  //같은 계통의 색깔은 무엇인지
+  //보색은 무엇인지ㅂ
 });
 /*
   *
@@ -237,10 +268,41 @@ function WhatToneColor(src_color) {
     })
 }
 //4.4 매칭이 가능한 옷인지
-function IsMatchCloth(src_cloth, dst_colth) {
+function IsMatchCloth(src_cloth, dst_cloth) {
     //src_cloth일 때 신경써야하는 옷
     //dst_cloth가 있으면 거기에 해당되는 지 알려주고,
     //아니라면, 그냥 그 중에 하나 말해주면 됨.
+    return new Promise (function (resolve, reject) {
+          checkBanClothes(src_cloth, dst_cloth)
+          .then()
+    });
+}
+function findBestClothes(src_cloth, dst_cloth) {
+    return new Promise (function (resolve, reject) {
+        //case1 : xColor
+        if (!src_cloth || closet_match.best.src_cloth) {
+              resolve("not_found_cloth");
+        }
+        //exception : src_cloth == dst_cloth
+        if (src_cloth == dst_cloth) {
+            // resolve(closet_match.best.src_cloth[0]);
+            reject("found_same_cloth");
+        } else if (!dst_cloth) {
+            resolve(closet_match.best.src_cloth[0]);
+        } else {
+            //ban_list check
+            checkBanClothes(src_cloth, dst_cloth)
+            .then(function())
+        }
+    });
+}
+function checkBanClothes(src_cloth, dst_cloth) {
+    return new Promise (function (resolve, reject) {
+        var ban_list = closet_match.best.src_cloth;
+        for (i = 0; i < ban_list.length; ++i) {
+            if (ban_list[i] == dst_cloth)
+        }
+    });
 }
 //4.$. 서버처리-대기
 app.listen(3000);
